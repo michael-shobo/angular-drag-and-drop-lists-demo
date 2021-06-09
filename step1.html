@@ -1,125 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Bootstrap Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/bootstrap.css">
-<style>
+    <style>
+        body {
+            height: 100vh;
+            background-image: linear-gradient(135deg, #8052ec, #d161ff);
+        }
 
-    body {
-        height: 100vh;
-        background-image: linear-gradient(135deg, #8052ec, #d161ff);
-    }
+        .done {
+            text-decoration: none;
+        }
 
-    .done{
-        text-decoration: line-through;
-    }
-
-    ul.dropped-area{
-        width: 100%;
-        min-height: 150px;
-        border: 1px dotted white;
-        background: #f8f9fa;
-    }
-
-</style>
+        ul.dropped-area {
+            width: 100%;
+            min-height: 150px;
+            border: 1px dotted white;
+            background: #f8f9fa;
+        }
+    </style>
 </head>
-<body ng-app="MyApp" >
-<div class="container-fluid mt-5" ng-controller="MyController">
-<div class="col-md-6  col-sm-9 m-auto mt-5 ">
 
-    showAllDone {{showAllDone}}
+<body ng-app="MyApp">
+    <div class="container-fluid mt-5" ng-controller="MyController">
+        <div class="col-md-6  col-sm-9 m-auto mt-5 ">
 
-    {{test3}}
-    <br>
-    isEdit {{isEdit}}
-    <div class="card">
-    <div class="card-body">
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <button  class="btn btn-outline-secondary" ng-hide="isEdit" ng-click="addTask()" type="button" >Add</button>
-                <button  class="btn btn-outline-secondary" ng-show="isEdit" ng-click="updateTask()" type="button" >Edit</button>
-                <button  class="btn btn-outline-danger"  ng-show="isEdit" ng-click="cancel()" type="button" >cancel</button>
+            <div class="card">
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-secondary" ng-hide="isEdit" ng-click="addTask()"
+                                type="button">Add</button>
+                            <button class="btn btn-outline-secondary" ng-show="isEdit" ng-click="updateTask()"
+                                type="button">Update</button>
+                            <button class="btn btn-outline-danger" ng-show="isEdit" ng-click="cancel()"
+                                type="button">cancel</button>
+                        </div>
+                        <input ng-model="task.title" type="text" class="form-control">
+                    </div>
+                    <span ng-show="task.title.length>0">your task is {{task.title}}</span>
+                </div>
             </div>
-            <input ng-model="task.title" type="text" class="form-control">
+
         </div>
-        <span ng-show="task.title.length>0">your task is {{task.title}}</span>
-    </div>
-         </div>
-    <button type="button" class="btn btn-primary" ng-show="showAllDone" ng-click="toggleTheDoneStatus()">Show All Done</button>
-    <button type="button" class="btn btn-danger" ng-hide="showAllDone" ng-click="toggleTheDoneStatus()">Hide All Done</button>
-
-</div>
-    <div class="col-sm-9 m-auto">
-        <div class="row mt-2">
-        <div class="col-sm-6 ">
-            <h4 class="text-center bg-white p-2">In Progress</h4>
-        <ul class="list-group mt-5 dropped-area"
-            dnd-list="models.tasks.InProgress"
-            dnd-drop="DropInProgress(index, item, external, type)">
-            <li class="list-group-item"
-                ng-repeat="item in models.tasks.InProgress"
-                dnd-draggable="item"
-                dnd-moved="models.tasks.InProgress.splice($index, 1)"
-                dnd-effect-allowed="move"
-                dnd-selected="models.selected = item"
-                ng-class="{'selected': models.selected === item}"
-                ng-hide="item.isDone && showAllDone == false" >
-                <div>
-                    <span ng-class="{'done':item.isDone == true}"> {{item}}</span>
-                    <a href="javascript:;" class="float-right" ng-click="delete(item)" >X</a>
-                    <a href="javascript:;" class="float-right btn btn-primary mr-2" ng-click="edit(item,$index)" >Edit</a>
-                    <a href="javascript:;" class=""
-                       ng-class="{'btn-danger float-right btn mr-2':item.isDone == true,'float-right btn mr-2 btn-primary':item.isDone == false}"
-                       ng-click="toggleStatus(item)"
-                    >
-                        <span ng-show="item.isDone == false">Done</span>
-                        <span ng-show="item.isDone == true">Undone</span>
-                    </a></div>
-            </li>
-        </ul>
+        <div class="col-sm m-auto">
+            <div class="row mt-4">
+                <div class="col-sm-4">
+                    <h4 class="text-center bg-white p-2">Todo</h4>
+                    <ul class="list-group mt-5 dropped-area" dnd-list="models.tasks.Todo"
+                        dnd-drop="DropInTodo(index, item, external, type)">
+                        <li class="list-group-item" ng-repeat="item in models.tasks.Todo" dnd-draggable="item"
+                            dnd-moved="models.tasks.Todo.splice($index, 1)" dnd-effect-allowed="move"
+                            dnd-selected="models.selected = item" ng-class="{'selected': models.selected === item}"
+                            >
+                            <div>
+                                <span ng-class="{'done':item.isDone == true}"> {{item.title}}</span>
+                                <a href="javascript:;" class="float-right" ng-click="delete(item,models.tasks.Todo)">X</a>
+                                <a href="javascript:;" class="float-right btn btn-primary mr-2"
+                                    ng-click="edit(item,$index,models.tasks.Todo)">Edit</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-4">
+                    <h4 class="text-center bg-white p-2">In Progress</h4>
+                    <ul class="list-group mt-5 dropped-area" dnd-list="models.tasks.InProgress"
+                        dnd-drop="DropInProgress(index, item, external, type)">
+                        <li class="list-group-item" ng-repeat="item in models.tasks.InProgress" dnd-draggable="item"
+                            dnd-moved="models.tasks.InProgress.splice($index, 1)" dnd-effect-allowed="move"
+                            dnd-selected="models.selected = item" ng-class="{'selected': models.selected === item}"
+                            >
+                            <div>
+                                <span ng-class="{'done':item.isDone == true}"> {{item.title}}</span>
+                                <a href="javascript:;" class="float-right" ng-click="delete(item,models.tasks.InProgress)">X</a>
+                                <a href="javascript:;" class="float-right btn btn-primary mr-2"
+                                    ng-click="edit(item,$index,models.tasks.InProgress)">Edit</a>
+                                <a href="javascript:;" class=""
+                                    ng-class="{'btn-danger float-right btn mr-2':item.isDone == true,'float-right btn mr-2 btn-primary':item.isDone == false}"
+                                    ng-click="toggleStatus(item)">
+                                    <span ng-show="item.isDone == false">Done</span>
+                                    <span ng-show="item.isDone == true">Undone</span>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-4">
+                    <h4 class="text-center bg-white p-2">Done</h4>
+                    <ul class="list-group mt-5 dropped-area" dnd-list="models.tasks.Done"
+                        dnd-drop="DropInDone(index, item, external, type)">
+                        <li class="list-group-item" ng-repeat="item in models.tasks.Done" dnd-draggable="item"
+                            dnd-moved="models.tasks.Done.splice($index, 1)" dnd-effect-allowed="move"
+                            dnd-selected="models.selected = item" ng-class="{'selected': models.selected === item}"
+                            >
+                            <div>
+                                <span ng-class="{'done':item.isDone == true}"> {{item.title}}</span>
+                                <a href="javascript:;" class="float-right" ng-click="delete(item,models.tasks.Done)">X</a>
+                                <a href="javascript:;" class="float-right btn btn-primary mr-2"
+                                    ng-click="edit(item,$index,models.tasks.Done)">Edit</a>
+                                <a href="javascript:;" ng-click="toggleStatus(item)" class=""
+                                    ng-class="{'btn-danger float-right btn mr-2':item.isDone == true,'float-right btn mr-2 btn-primary':item.isDone == false}"
+                                    ng-click="markAsDone(item)">
+                                    <span ng-show="item.isDone == false">Done</span>
+                                    <span ng-show="item.isDone == true">Undone</span>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div class="col-sm-6 ">
-            <h4 class="text-center bg-white p-2">Done</h4>
-            <ul class="list-group mt-5 dropped-area"
-                dnd-list="models.tasks.Done"
-                dnd-drop="DropInDone(index, item, external, type)">
-            <li class="list-group-item"
-                ng-repeat="item in models.tasks.Done"
-                dnd-draggable="item"
-                dnd-moved="models.tasks.Done.splice($index, 1)"
-                dnd-effect-allowed="move"
-                dnd-selected="models.selected = item"
-                ng-class="{'selected': models.selected === item}"
-                ng-hide="item.isDone && showAllDone == false"            >
-                <div >
-                    <span ng-class="{'done':item.isDone == true}"> {{item}}</span>
-                    <a href="javascript:;" class="float-right" ng-click="delete(item)" >X</a>
-                    <a href="javascript:;" class="float-right btn btn-primary mr-2" ng-click="edit(item,$index)" >Edit</a>
-                    <a href="javascript:;"
-                       ng-click="toggleStatus(item)"
-                       class="" ng-class="{'btn-danger float-right btn mr-2':item.isDone == true,'float-right btn mr-2 btn-primary':item.isDone == false}" ng-click="markAsDone(item)" >
-                        <span ng-show="item.isDone == false">Done</span>
-                        <span ng-show="item.isDone == true">Undone</span>
-                    </a></div>
-            </li>
-        </ul>
-    </div>
-    </div>
+
     </div>
 
-</div>
 
 
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/angular-drag-and-drop-lists@2.1.0/angular-drag-and-drop-lists.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/app.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/angular-drag-and-drop-lists@2.1.0/angular-drag-and-drop-lists.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/app.js"></script>
 
 
 
 </body>
+
 </html>
